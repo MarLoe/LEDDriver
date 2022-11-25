@@ -1,0 +1,58 @@
+{
+    "name": "LEDDriver",
+    "version": "0.1.0",
+    "keywords": ["led", "control", "blink", "fade", "task", "core"],
+    "description": "Arduino library for controlling standard LEDs.",
+    "authors": 
+    {    
+        "name": "Martin Lobger",
+        "maintainer": true
+    },
+    "license": "MIT",
+    "frameworks": "arduino",
+    "platforms": "*",
+    "repository": 
+    {
+        "type": "git",
+        "url": "https://github.com/MarLoe/LEDDriver.git"
+    },
+    "examples": [
+        {
+            "name": "led-basic",
+            "base": "examples/led-basic",
+            "files": ["led-basic.ino"]
+        },       
+        {
+            "name": "led-fade",
+            "base": "examples/led-fade",
+            "files": ["led-fade.ino"]
+        },
+        {
+            "name": "led-fade-manual",
+            "base": "examples/led-fade-manual",
+            "files": ["led-fade-manual.ino"]
+        }                        
+    ],
+    "export": {
+        "include":
+        [
+            "src/*",
+            "include/*",
+            "examples/*",
+            "LICENSE",
+            "README.md",
+            "library.properties",
+            "library.json",
+            "keywords.txt"
+        ],
+        "exclude":
+        [
+            "src/main.cpp",
+            ".gitignore",
+            ".github/",
+            ".git/",
+            ".pio/",
+            ".vscode/"
+        ]
+    }        
+}
