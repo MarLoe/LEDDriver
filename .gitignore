@@ -1,0 +1,7 @@
+.vscode/
+.vs/
+.pio/
+
+; Packaged library (and unpackaged tests)
+*.gz
+LEDDriver-*/*
