@@ -25,6 +25,7 @@ LED.set(0, 128);
 
 - [`led-basic.ino`](examples/led-basic/led-basic.ino) - Demonstrates basic use
 - [`led-blink.ino`](examples/led-blink/led-blink.ino) - Demonstrates using blink (executed in the background)
+- [`led-blink-advanced.ino`](examples/led-blink-advanced//led-blink-advanced.ino) - Demonstrates using blink (executed in the background)
 - [`led-fade.ino`](examples/led-fade/led-fade.ino) - Demonstrates how to fade the led to a specific level
 - [`led-fade-manual.ino`](examples/led-fade-manual/led-fade-manual.ino) - Demonstrates how to manualy control the fade level of a led
 

@@ -112,7 +112,7 @@ bool LEDDriver::blink(uint8_t channel, float freq)
     return blink(channel, duration, duration);
 }
 
-bool LEDDriver::blink(uint8_t channel, uint32_t on, uint32_t off, unsigned long delay, unsigned long timeout)
+bool LEDDriver::blink(uint8_t channel, unsigned long on, unsigned long off, unsigned long delay, unsigned long timeout)
 {
     return sendCommand(command_type::cmd_blink, channel, on, off, 0, 255, delay, timeout);
 }

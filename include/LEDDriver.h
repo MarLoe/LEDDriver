@@ -63,7 +63,15 @@ public:
     /// @return If success true, else false
     bool blink(uint8_t channel, float freq);
     
-   
+    /// @brief Blink the LED on (level 255) and off (level 0) for the given channel.
+    /// @param channel The channel to blink.
+    /// @param on The number of milliseconds the led is turned on (level 255).
+    /// @param off  The number of milliseconds the led is turned off (level 0).
+    /// @param delay The number of milliseconds to delay before the blinking start. If 0 (zero) the blinking will start immediately.
+    /// @param timeout The number of milliseconds the blinking should last. If 0 (zero) the blinking will not stop until off() or stop() is called.
+    /// @return If success true, else false
+    bool blink(uint8_t channel, unsigned long on, unsigned long off, unsigned long delay = 0, unsigned long timeout = 0);
+
     /// @brief Will turn of the LED attached to the given channel and thus stop any background blinking or fading.
     /// @param channel 
     /// @return If success true, else false
