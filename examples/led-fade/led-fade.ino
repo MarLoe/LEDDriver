@@ -15,8 +15,8 @@
 void setup()
 {
     Serial.begin(115200);
-    Serial.println("\nExample 'led-fade' running");
-    Serial.println("\nLEDDriver is able to fade the led from 0 (off) to 255 (full)");
+    Serial.println("Example 'led-fade' running");
+    Serial.println("LEDDriver is able to fade the led from 0 (off) to 255 (full)");
 
     // Attach led pin to channel 0
     LED.attach(LED_PIN, 0);
