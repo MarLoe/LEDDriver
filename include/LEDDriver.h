@@ -10,24 +10,68 @@ public:
     LEDDriver();
     ~LEDDriver();
 
+    /// @brief Will initialse the LEDDriver and create a task for running and controlling LEDs in the background.
+    /// @param coreId The core on wich the task shall run.
     void begin(BaseType_t coreId = tskNO_AFFINITY);
+
+    /// @brief Deinitialize the LEDDriver and stop the task controlling the LEDs.
     void end();
 
+    /// @brief Attach a pin to the given channel.
+    /// @note Please take note of the channels used, so they do not interfear with the use of PWM channels for e.g. servo motors.
+    /// @param pin The pin number to attach (e.g. LED_BUILTIN or GPIO_NUM_2)
+    /// @param channel The channel to attach the pin to. Typically 16 (0-15) channels are available.
     void attach(uint8_t pin, uint8_t channel);
+
+    /// @brief Detach a pin from the channel it was attached to.
+    /// @param pin The pin number to detach.
     void detach(uint8_t pin);
 
+
+    /// @brief Get the current level of the channel. Can be used to read the level of the LED attache to the channel.
+    /// @param channel The channel to get the level from.
+    /// @return The current level of the channel.
+    /// @see set
     uint8_t get(uint8_t channel);
+
+    /// @brief Set the level for the given channel.
+    /// @param channel The channel to set the level for.
+    /// @param value The level between 0-255, where 0 (zero) is off and 255 is full on.
+    /// @return If success true, else false
     bool set(uint8_t channel, uint8_t value);
 
-    bool fade(uint8_t channel, uint8_t value, uint32_t duration);
-    bool fade(uint8_t channel, uint8_t from, uint8_t value, uint32_t duration);
 
+    /// @brief Fade the LED for the given channel. The LED will fade from the current level to value. I can fade both up and down.
+    /// @param channel The channel to fade.
+    /// @param value The level to fade to.
+    /// @param duration The number of milliseconds the fade should take (e.g. 500 for half a second).
+    /// @return If success true, else false
+    bool fade(uint8_t channel, uint8_t value, unsigned long duration);
+
+    /// @brief Fade the LED for the given channel. The LED will fade between the levels provided. I can fade both up and down.
+    /// @param channel The channel to fade.
+    /// @param from The level to fade from.
+    /// @param value The level to fade to.
+    /// @param duration The number of milliseconds the fade should take (e.g. 500 for half a second).
+    /// @return If success true, else false
+    bool fade(uint8_t channel, uint8_t from, uint8_t value, unsigned long duration);
+
+
+    /// @brief Blink the LED on (level 255) and off (level 0) for the given channel. The LED will blink until off() or stop() is called.
+    /// @param channel The channel to blink.
+    /// @param freq The frequency given in Hz (e.g. 5 to blink 5 times per second or 0.25 to blink every forth second)
+    /// @return If success true, else false
     bool blink(uint8_t channel, float freq);
-    bool blink(uint8_t channel, uint32_t on, uint32_t off, unsigned long delay = 0, unsigned long timeout = 0);
-
-    bool multiBlink(uint8_t channel, uint8_t count, uint32_t on, uint32_t pause, uint32_t duration, unsigned long delay = 0, unsigned long timeout = 0);
-
+    
+   
+    /// @brief Will turn of the LED attached to the given channel and thus stop any background blinking or fading.
+    /// @param channel 
+    /// @return If success true, else false
     bool off(uint8_t channel);
+
+    /// @brief Will turn off all channels with attached pins
+    /// @return If all channels succesfull turned off then true, else false
+    /// @see off
     bool stop();
 
 protected:

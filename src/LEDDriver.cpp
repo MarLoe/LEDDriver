@@ -95,13 +95,13 @@ bool LEDDriver::set(uint8_t channel, uint8_t value)
     return sendCommand(command_type::cmd_set, channel, 0, 0, 0, value, 0, 0);
 }
 
-bool LEDDriver::fade(uint8_t channel, uint8_t value, uint32_t duration)
+bool LEDDriver::fade(uint8_t channel, uint8_t value, unsigned long duration)
 {
     uint8_t from = get(channel);
     return fade(channel, from, value, duration);
 }
 
-bool LEDDriver::fade(uint8_t channel, uint8_t from, uint8_t value, uint32_t duration)
+bool LEDDriver::fade(uint8_t channel, uint8_t from, uint8_t value, unsigned long duration)
 {
     return sendCommand(command_type::cmd_fade, channel, 0, 0, from, value, 0, duration);
 }
