@@ -1,7 +1,7 @@
 {
     "name": "LEDDriver",
-    "version": "0.1.0",
-    "keywords": ["led", "control", "blink", "fade", "task", "core"],
+    "version": "0.2.0",
+    "keywords": ["led", "control", "blink", "fade", "pwm", "async", "task", "core"],
     "description": "Arduino library for controlling standard LEDs.",
     "authors": 
     {    
@@ -22,6 +22,21 @@
             "base": "examples/led-basic",
             "files": ["led-basic.ino"]
         },       
+        {
+            "name": "led-blink",
+            "base": "examples/led-blink",
+            "files": ["led-blink.ino"]
+        },
+        {
+            "name": "led-blink-advanced",
+            "base": "examples/led-blink-advanced",
+            "files": ["led-blink-advanced.ino"]
+        },
+        {
+            "name": "led-blink-multi",
+            "base": "examples/led-blink-multi",
+            "files": ["led-blink-multi.ino"]
+        },
         {
             "name": "led-fade",
             "base": "examples/led-fade",

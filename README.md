@@ -1,6 +1,6 @@
 # LEDDriver  
 
-[![GitHub release](https://img.shields.io/github/release/marloe/LEDDriver.svg)](https://github.com/marloe/LEDDriver/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/marloe/LEDDriver/v0.1.0.svg)](https://github.com/marloe/LEDDriver/compare/v0.1.0...main)
+[![GitHub release](https://img.shields.io/github/release/marloe/LEDDriver.svg)](https://github.com/marloe/LEDDriver/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/marloe/LEDDriver/latest.svg)](https://github.com/MarLoe/LEDDriver/compare/v0.1.0...master)
 
 Arduino library for controlling standard LEDs using pwm for duty cycling.
 

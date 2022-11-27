@@ -1,9 +1,13 @@
 LEDDriver	KEYWORD1
-led	KEYWORD1
-on	KEYWORD2
+led KEYWORD1
+control KEYWORD1
+background KEYWORD1
+pwm KEYWORD1
+async	KEYWORD1
+asynchronous	KEYWORD1
+
+set	KEYWORD2
 off	KEYWORD2
-toggle	KEYWORD2
 fade	KEYWORD2
 blink	KEYWORD2
-pin	KEYWORD3
 
