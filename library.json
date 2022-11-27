@@ -1,6 +1,6 @@
 {
-    "name": "LEDDriver",
-    "version": "0.2.0",
+    "name": "LEDDriver PWM",
+    "version": "0.2.1",
     "keywords": ["led", "control", "blink", "fade", "pwm", "async", "task", "core"],
     "description": "Arduino library for controlling standard LEDs.",
     "authors": 

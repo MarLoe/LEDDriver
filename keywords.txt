@@ -1,4 +1,4 @@
-LEDDriver	KEYWORD1
+LEDDriver PWM	KEYWORD1
 led KEYWORD1
 control KEYWORD1
 background KEYWORD1
