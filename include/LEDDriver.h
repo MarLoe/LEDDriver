@@ -27,7 +27,6 @@ public:
     /// @param pin The pin number to detach.
     void detach(uint8_t pin);
 
-
     /// @brief Get the current level of the channel. Can be used to read the level of the LED attache to the channel.
     /// @param channel The channel to get the level from.
     /// @return The current level of the channel.
@@ -39,7 +38,6 @@ public:
     /// @param value The level between 0-255, where 0 (zero) is off and 255 is full on.
     /// @return If success true, else false
     bool set(uint8_t channel, uint8_t value);
-
 
     /// @brief Fade the LED for the given channel. The LED will fade from the current level to value. I can fade both up and down.
     /// @param channel The channel to fade.
@@ -62,7 +60,7 @@ public:
     /// @param freq The frequency given in Hz (e.g. 5 to blink 5 times per second or 0.25 to blink every forth second)
     /// @return If success true, else false
     bool blink(uint8_t channel, float freq);
-    
+
     /// @brief Blink the LED on (level 255) and off (level 0) for the given channel.
     /// @param channel The channel to blink.
     /// @param on The number of milliseconds the led is turned on (level 255).
@@ -72,8 +70,20 @@ public:
     /// @return If success true, else false
     bool blink(uint8_t channel, unsigned long on, unsigned long off, unsigned long delay = 0, unsigned long timeout = 0);
 
+    /// @brief Blink the LED on (level 255) and off (level 0) multiple times for the given channel.
+    /// @param channel The channel to blink multiple times.
+    /// @param count The number of time to blink (one blink is on + off)
+    /// @param on The number of milliseconds the led is turned on (level 255).
+    /// @param off  The number of milliseconds the led is turned off (level 0).
+    /// @param pause The pause in milliseconds after blinking count times.
+    /// @param delay The number of milliseconds to delay before the blinking start. If 0 (zero) the blinking will start immediately.
+    /// @param timeout The number of milliseconds the blinking should last. If 0 (zero) the blinking will not stop until off() or stop() is called.
+    /// @return If success true, else false
+    bool multiBlink(uint8_t channel, uint8_t count, unsigned long on, unsigned long off, unsigned long pause, unsigned long delay = 0, unsigned long timeout = 0);
+
+
     /// @brief Will turn of the LED attached to the given channel and thus stop any background blinking or fading.
-    /// @param channel 
+    /// @param channel
     /// @return If success true, else false
     bool off(uint8_t channel);
 
@@ -107,8 +117,8 @@ protected:
         uint8_t channel;
         uint8_t min;
         uint8_t max;
-        uint32_t on;
-        uint32_t off;
+        unsigned long on;
+        unsigned long off;
         unsigned long start;
         unsigned long end;
         uint32_t state;
@@ -117,7 +127,7 @@ protected:
 
     void taskLoop();
 
-    bool sendCommand(command_type_t type, uint8_t channel, uint32_t on, uint32_t off, uint8_t min, uint8_t max, unsigned long start, unsigned long end);
+    bool sendCommand(command_type_t type, uint8_t channel, unsigned long on, unsigned long off, uint8_t min, uint8_t max, unsigned long start, unsigned long end);
     void receiveCommands(std::vector<ptr_command_t> *commands, long timeout);
     std::vector<ptr_command_t>::const_iterator eraseCommand(std::vector<ptr_command_t> *commands, std::vector<ptr_command_t>::const_iterator command);
 

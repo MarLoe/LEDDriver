@@ -4,7 +4,7 @@
 LEDDriver LED;
 
 #if ARDUHAL_LOG_LEVEL >= ARDUHAL_LOG_LEVEL_DEBUG
-#define LED_DRIVER_TASK_SIZE 2048 // 1536
+#define LED_DRIVER_TASK_SIZE 2048
 #else
 #define LED_DRIVER_TASK_SIZE 768
 #endif
@@ -117,13 +117,21 @@ bool LEDDriver::blink(uint8_t channel, unsigned long on, unsigned long off, unsi
     return sendCommand(command_type::cmd_blink, channel, on, off, 0, 255, delay, timeout);
 }
 
-bool LEDDriver::multiBlink(uint8_t channel, uint8_t count, uint32_t on, uint32_t pause, uint32_t duration, unsigned long delay, unsigned long timeout)
+bool LEDDriver::multiBlink(uint8_t channel, uint8_t count, unsigned long on, unsigned long off, unsigned long pause, unsigned long delay, unsigned long timeout)
 {
+    if (count == 0)
+    {
+        log_w("Cannot multi blink 0 times");
+        return false;
+    }
+
     bool result = true;
+    unsigned long cycle = (on + off);
+    unsigned long cyclePause = ((count - 1) * cycle) + pause;
     for (int i = 0; i < count; i++)
     {
-        uint32_t cycleDelay = i * (on + pause);
-        result &= blink(channel, on, duration - on, delay + cycleDelay, timeout == 0 ? 0 : timeout + cycleDelay);
+        unsigned long cycleDelay = i * cycle;
+        result &= blink(channel, on, off + cyclePause, delay + cycleDelay, timeout == 0 ? 0 : timeout + cycleDelay);
     }
     return result;
 }
@@ -221,7 +229,7 @@ void inline LEDDriver::taskLoop()
     }
 }
 
-bool LEDDriver::sendCommand(command_type_t type, uint8_t channel, uint32_t on, uint32_t off, uint8_t min, uint8_t max, unsigned long start, unsigned long end)
+bool LEDDriver::sendCommand(command_type_t type, uint8_t channel, unsigned long on, unsigned long off, uint8_t min, uint8_t max, unsigned long start, unsigned long end)
 {
     auto it = findChannel(channel);
     if (it == _channels.end())
