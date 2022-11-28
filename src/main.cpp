@@ -4,3 +4,5 @@
 // #include "led-blink-multi/led-blink-multi.ino"
 // #include "led-fade/led-fade.ino"
 // #include "led-fade-manual/led-fade-manual.ino"
+// #include "led-flicker/led-flicker.ino"
+// #include "led-flicker-advanced/led-flicker-advanced.ino"

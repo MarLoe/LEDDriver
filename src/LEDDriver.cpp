@@ -136,6 +136,16 @@ bool LEDDriver::multiBlink(uint8_t channel, uint8_t count, unsigned long on, uns
     return result;
 }
 
+bool LEDDriver::flicker(uint8_t channel, float freq)
+{
+    return flicker(channel, roundf(1000 / freq), 0);
+}
+
+bool LEDDriver::flicker(uint8_t channel, unsigned long on, unsigned long off, unsigned long delay, unsigned long timeout)
+{
+    return sendCommand(command_type::cmd_flicker, channel, on, off, 1, 255, delay, timeout);
+}
+
 bool LEDDriver::off(uint8_t channel)
 {
     return sendCommand(command_type::cmd_off, channel, 0, 0, 0, 0, 0, 0);
@@ -208,17 +218,33 @@ void inline LEDDriver::taskLoop()
 
                 case command_type::cmd_blink:
                     ended = cmd->end > 0 && t > cmd->end;
-                    if (cmd->state == 0 && !ended)
+                    if (!ended && cmd->state == 0)
                     {
                         cmd->state = 1;
                         cmd->start += cmd->on;
                         writeChannel(cmd->channel, cmd->max);
                     }
-                    else if (cmd->state == 1 || ended)
+                    else if (ended || cmd->state == 1)
                     {
                         cmd->state = 0;
                         cmd->start += cmd->off;
                         writeChannel(cmd->channel, cmd->min);
+                    }
+                    break;
+
+                case command_type::cmd_flicker:
+                    ended = cmd->end > 0 && t > cmd->end;
+                    if (!ended && (cmd->state == 0 || cmd->off == 0))
+                    {
+                        cmd->state = 1;
+                        cmd->start += cmd->on;
+                        writeChannel(cmd->channel, random(cmd->min, cmd->max));
+                    }
+                    else if (ended || cmd->state == 1)
+                    {
+                        cmd->state = 0;
+                        cmd->start += cmd->off;
+                        writeChannel(cmd->channel, 0);
                     }
                     break;
                 }

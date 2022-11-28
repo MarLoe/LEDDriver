@@ -1,18 +1,25 @@
 {
     "name": "LEDDriver PWM",
     "version": "0.2.1",
-    "keywords": ["led", "control", "blink", "fade", "pwm", "async", "task", "core"],
+    "keywords": [
+        "led",
+        "control",
+        "blink",
+        "fade",
+        "pwm",
+        "async",
+        "task",
+        "core"
+    ],
     "description": "Arduino library for controlling standard LEDs.",
-    "authors": 
-    {    
+    "authors": {
         "name": "Martin Lobger",
         "maintainer": true
     },
     "license": "MIT",
     "frameworks": "arduino",
     "platforms": "*",
-    "repository": 
-    {
+    "repository": {
         "type": "git",
         "url": "https://github.com/MarLoe/LEDDriver.git"
     },
@@ -20,37 +27,62 @@
         {
             "name": "led-basic",
             "base": "examples/led-basic",
-            "files": ["led-basic.ino"]
-        },       
+            "files": [
+                "led-basic.ino"
+            ]
+        },
         {
             "name": "led-blink",
             "base": "examples/led-blink",
-            "files": ["led-blink.ino"]
+            "files": [
+                "led-blink.ino"
+            ]
         },
         {
             "name": "led-blink-advanced",
             "base": "examples/led-blink-advanced",
-            "files": ["led-blink-advanced.ino"]
+            "files": [
+                "led-blink-advanced.ino"
+            ]
         },
         {
             "name": "led-blink-multi",
             "base": "examples/led-blink-multi",
-            "files": ["led-blink-multi.ino"]
+            "files": [
+                "led-blink-multi.ino"
+            ]
+        },
+        {
+            "name": "led-flicker",
+            "base": "examples/led-flicker",
+            "files": [
+                "led-flicker.ino"
+            ]
+        },
+        {
+            "name": "led-flicker-advanced",
+            "base": "examples/led-flicker-advanced",
+            "files": [
+                "led-flicker-advanced.ino"
+            ]
         },
         {
             "name": "led-fade",
             "base": "examples/led-fade",
-            "files": ["led-fade.ino"]
+            "files": [
+                "led-fade.ino"
+            ]
         },
         {
             "name": "led-fade-manual",
             "base": "examples/led-fade-manual",
-            "files": ["led-fade-manual.ino"]
-        }                        
+            "files": [
+                "led-fade-manual.ino"
+            ]
+        }
     ],
     "export": {
-        "include":
-        [
+        "include": [
             "src/*",
             "include/*",
             "examples/*",
@@ -60,8 +92,7 @@
             "library.json",
             "keywords.txt"
         ],
-        "exclude":
-        [
+        "exclude": [
             "src/main.cpp",
             ".gitignore",
             ".github/",
@@ -69,5 +100,5 @@
             ".pio/",
             ".vscode/"
         ]
-    }        
+    }
 }

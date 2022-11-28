@@ -54,7 +54,6 @@ public:
     /// @return If success true, else false
     bool fade(uint8_t channel, uint8_t from, uint8_t value, unsigned long duration);
 
-
     /// @brief Blink the LED on (level 255) and off (level 0) for the given channel. The LED will blink until off() or stop() is called.
     /// @param channel The channel to blink.
     /// @param freq The frequency given in Hz (e.g. 5 to blink 5 times per second or 0.25 to blink every forth second)
@@ -81,6 +80,20 @@ public:
     /// @return If success true, else false
     bool multiBlink(uint8_t channel, uint8_t count, unsigned long on, unsigned long off, unsigned long pause, unsigned long delay = 0, unsigned long timeout = 0);
 
+    /// @brief Flicker the LED to random levels (1-255) for the given channel. The LED will flicker until off() or stop() is called.
+    /// @param channel The channel to flicker.
+    /// @param freq The frequency given in Hz (e.g. 5 to flicker 5 times per second or 0.25 to flicker every forth second)
+    /// @return If success true, else false
+    bool flicker(uint8_t channel, float freq);
+
+    /// @brief Flicker the LED to random levels (1-255) for the given channel.
+    /// @param channel The channel to flicker.
+    /// @param on The number of milliseconds the led is turned on.
+    /// @param off  The number of milliseconds the led is turned off.
+    /// @param delay The number of milliseconds to delay before the flickering start. If 0 (zero) the flickering will start immediately.
+    /// @param timeout The number of milliseconds the flickering should last. If 0 (zero) the flickering will not stop until off() or stop() is called.
+    /// @return If success true, else false
+    bool flicker(uint8_t channel, unsigned long on, unsigned long off, unsigned long delay = 0, unsigned long timeout = 0);
 
     /// @brief Will turn of the LED attached to the given channel and thus stop any background blinking or fading.
     /// @param channel
@@ -109,6 +122,7 @@ protected:
         cmd_set,
         cmd_fade,
         cmd_blink,
+        cmd_flicker,
     } command_type_t;
 
     typedef struct __attribute__((packed, aligned(1))) str_command
