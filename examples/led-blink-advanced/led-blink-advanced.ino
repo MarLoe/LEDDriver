@@ -24,6 +24,9 @@ void setup()
     Serial.print("The blinking will start in ");
     Serial.print(BLINK_DELAY);
     Serial.println(" milliseconds.");
+    Serial.print("And continue for ");
+    Serial.print(BLINK_DURATION);
+    Serial.println(" milliseconds.");
 
     // Attach led pin to channel 0
     LED.attach(LED_PIN, 0);
@@ -33,7 +36,7 @@ void setup()
 
     // Blink led attached to channel 0
     // The led will be on for BLINK_ON ms and then off for BLINK_ON ms.
-    // The blinking is delay (will start in) 5000ms and last for 10000ms.
+    // The blinking is delay (will start in) BLINK_DELAY ms and last for BLINK_DURATION ms.
     LED.blink(0, BLINK_ON, BLINK_OFF, BLINK_DELAY, BLINK_DURATION);
 }
 

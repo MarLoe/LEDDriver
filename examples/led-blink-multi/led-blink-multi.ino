@@ -10,7 +10,7 @@
 // If not, replace LED_BUILTIN with the correct pin number and/or connect an external LED.
 #define LED_PIN LED_BUILTIN
 
-#define BLINK_COUNT 3
+#define BLINK_COUNT 3    // The number of blinks in each "set"
 #define BLINK_ON 250     // led will be on for this amount of milliseconds
 #define BLINK_OFF 500    // led will be off for this amount of milliseconds
 #define BLINK_PAUSE 5000 // The amount of milliseconds before the blinking starts
@@ -27,8 +27,7 @@ void setup()
     // Initialize and start the LEDDriver
     LED.begin();
 
-    // Blink led attached to channel 0 @ 0.5Hz
-    // LED.blink(0, 250, 250);
+    // Blink led attached to channel 0. It will blink on/off BLINK_COUNT times and the pause for BLINK_DELAY ms
     LED.multiBlink(0, BLINK_COUNT, BLINK_ON, BLINK_OFF, BLINK_PAUSE);
 }
 
