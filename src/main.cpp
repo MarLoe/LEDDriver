@@ -6,3 +6,6 @@
 // #include "led-fade-manual/led-fade-manual.ino"
 // #include "led-flicker/led-flicker.ino"
 // #include "led-flicker-advanced/led-flicker-advanced.ino"
+
+// #include "led-fade-ums3/led-fade-ums3.ino"
+// #include "led-blink-ums3/led-blink-ums3.ino"
