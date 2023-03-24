@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 #include <vector>
+#include <HALDriver.h>
+#include <PWMDriver.h>
 
 class LEDDriver
 {
@@ -12,22 +14,12 @@ public:
 
     /// @brief Will initialse the LEDDriver and create a task for running and controlling LEDs in the background.
     /// @param coreId The core on wich the task shall run.
-    void begin(BaseType_t coreId = tskNO_AFFINITY);
+    void begin(HALDriver &halDriver, BaseType_t coreId = tskNO_AFFINITY);
 
     /// @brief Deinitialize the LEDDriver and stop the task controlling the LEDs.
     void end();
 
-    /// @brief Attach a pin to the given channel.
-    /// @note Please take note of the channels used, so they do not interfear with the use of PWM channels for e.g. servo motors.
-    /// @param pin The pin number to attach (e.g. LED_BUILTIN or GPIO_NUM_2)
-    /// @param channel The channel to attach the pin to. Typically 16 (0-15) channels are available.
-    void attach(uint8_t pin, uint8_t channel);
-
-    /// @brief Detach a pin from the channel it was attached to.
-    /// @param pin The pin number to detach.
-    void detach(uint8_t pin);
-
-    /// @brief Get the current level of the channel. Can be used to read the level of the LED attache to the channel.
+    /// @brief Get the current level of the channel. Can be used to read the level of the LED attached to the channel.
     /// @param channel The channel to get the level from.
     /// @return The current level of the channel.
     /// @see set
@@ -106,15 +98,9 @@ public:
     bool stop();
 
 protected:
+    HALDriver *_halDriver;
     TaskHandle_t _taskHandle;
     QueueHandle_t _queueHandle;
-
-    typedef struct str_channel
-    {
-        // TODO: Handling multiple pins on same channel
-        uint8_t channel;
-        uint8_t pin;
-    } str_channel_t, *ptr_channel_t;
 
     typedef enum command_type : uint8_t
     {
@@ -145,17 +131,8 @@ protected:
     void receiveCommands(std::vector<ptr_command_t> *commands, long timeout);
     std::vector<ptr_command_t>::const_iterator eraseCommand(std::vector<ptr_command_t> *commands, std::vector<ptr_command_t>::const_iterator command);
 
-    std::vector<ptr_channel_t> _channels;
-    std::vector<ptr_channel_t>::const_iterator findChannel(uint8_t channel);
-    std::vector<ptr_channel_t>::const_iterator findChannelByPin(uint8_t pin);
-
-    uint8_t readChannel(uint8_t channel);
-    void writeChannel(uint8_t channel, uint8_t value);
-
 protected:
     static void task(void *param);
 };
-
-extern LEDDriver LED;
 
 #endif
