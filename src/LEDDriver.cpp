@@ -1,13 +1,137 @@
 #include "LEDDriver.h"
 #include <mutex>
 
-LEDDriver LED;
+// LEDDriver LED;
 
 #if ARDUHAL_LOG_LEVEL >= ARDUHAL_LOG_LEVEL_DEBUG
 #define LED_DRIVER_TASK_SIZE 2048
 #else
 #define LED_DRIVER_TASK_SIZE 768
 #endif
+
+//-----------------------------------------------------------------------------
+// LEDHALDriver
+//-----------------------------------------------------------------------------
+
+bool LEDHALDriver::attach(uint8_t pin, uint8_t channel)
+{
+    auto it = findChannel(channel);
+    if (it == _channels.end())
+    {
+        auto ch = new str_channel_t{
+            .channel = channel,
+            .pin = pin,
+        };
+        _channels.push_back(ch);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool LEDHALDriver::detach(uint8_t pin)
+{
+    auto it = findChannelByPin(pin);
+    if (it == _channels.end())
+    {
+        log_w("Pin %i not attached to any channel", pin);
+        return false;
+    }
+
+    // Turn off led
+    writeChannel((*it)->channel, 0);
+    _channels.erase(it);
+    delete *it;
+}
+
+uint8_t LEDHALDriver::get(uint8_t channel)
+{
+    if (isChannelAttached(channel))
+    {
+        return readChannel(channel);
+    }
+    return 0;
+}
+
+std::vector<LEDHALDriver::ptr_channel_t>::const_iterator LEDHALDriver::findChannel(uint8_t channel)
+{
+    auto isChannel = [&channel](ptr_channel_t i)
+    {
+        return i->channel == channel;
+    };
+    return std::find_if(_channels.begin(), _channels.end(), isChannel);
+}
+
+std::vector<LEDHALDriver::ptr_channel_t>::const_iterator LEDHALDriver::findChannelByPin(uint8_t pin)
+{
+    auto isChannel = [&pin](ptr_channel_t i)
+    {
+        return i->pin == pin;
+    };
+    return std::find_if(_channels.begin(), _channels.end(), isChannel);
+}
+
+bool LEDHALDriver::isChannelAttached(uint8_t channel)
+{
+    auto it = findChannel(channel);
+    if (it == _channels.end())
+    {
+        log_e("Channel %i not attached to any pin", channel);
+        return false;
+    }
+    return true;
+}
+
+//-----------------------------------------------------------------------------
+// LEDPWMDriver
+//-----------------------------------------------------------------------------
+
+bool LEDPWMDriver::attach(uint8_t pin, uint8_t channel)
+{
+    auto result = LEDHALDriver::attach(pin, channel);
+    if (result)
+    {
+        // Initialize channels
+        // channels 0-15, resolution 1-16 bits, freq limits depend on resolution
+        // ledcSetup(uint8_t channel, uint32_t freq, uint8_t resolution_bits);
+        ledcSetup(channel, 12000, 8); // 12 kHz PWM, 8-bit resolution
+    }
+
+    // Assign led pin to channel
+    ledcAttachPin(pin, channel);
+
+    // Turn off led
+    writeChannel(channel, 0);
+
+    return result;
+}
+
+bool LEDPWMDriver::detach(uint8_t pin)
+{
+    ledcDetachPin(pin);
+    return LEDHALDriver::detach(pin);
+}
+
+uint8_t LEDPWMDriver::readChannel(uint8_t channel)
+{
+    uint32_t value = ledcRead(channel);
+    if (value > 0xFF)
+    {
+        return 0xFF;
+    }
+    return value;
+}
+
+void inline LEDPWMDriver::writeChannel(uint8_t channel, uint8_t value)
+{
+    // log_d("Write: %i", value);
+    ledcWrite(channel, value);
+}
+
+//-----------------------------------------------------------------------------
+// LEDDriver
+//-----------------------------------------------------------------------------
 
 LEDDriver::LEDDriver()
 {
@@ -21,6 +145,12 @@ LEDDriver::~LEDDriver()
 
 void LEDDriver::begin(BaseType_t coreId)
 {
+    begin(new LEDPWMDriver(), coreId);
+}
+
+void LEDDriver::begin(LEDHALDriver *halDriver, BaseType_t coreId)
+{
+    _halDriver = halDriver;
     _queueHandle = xQueueCreate(10, sizeof(ptr_command_t));
     xTaskCreatePinnedToCore(LEDDriver::task, "LEDDriver::task", LED_DRIVER_TASK_SIZE, this, 2, &_taskHandle, coreId);
 }
@@ -39,57 +169,6 @@ void LEDDriver::end()
     }
 }
 
-void LEDDriver::attach(uint8_t pin, uint8_t channel)
-{
-    auto it = findChannel(channel);
-    if (it == _channels.end())
-    {
-        auto ch = new str_channel_t{
-            .channel = channel,
-            .pin = pin,
-        };
-        _channels.push_back(ch);
-
-        // Initialize channels
-        // channels 0-15, resolution 1-16 bits, freq limits depend on resolution
-        // ledcSetup(uint8_t channel, uint32_t freq, uint8_t resolution_bits);
-        ledcSetup(channel, 12000, 8); // 12 kHz PWM, 8-bit resolution
-    }
-
-    // Assign led pin to channel
-    ledcAttachPin(pin, channel);
-
-    // Turn off led
-    writeChannel(channel, 0);
-}
-
-void LEDDriver::detach(uint8_t pin)
-{
-    ledcDetachPin(pin);
-    auto it = findChannelByPin(pin);
-    if (it == _channels.end())
-    {
-        log_w("Pin %i not attached to any channel", pin);
-        return;
-    }
-
-    // Turn off led
-    writeChannel((*it)->channel, 0);
-    _channels.erase(it);
-    delete *it;
-}
-
-uint8_t LEDDriver::get(uint8_t channel)
-{
-    auto it = findChannel(channel);
-    if (it == _channels.end())
-    {
-        log_e("Channel %i not attached to any pin", channel);
-        return 0;
-    }
-    return readChannel(channel);
-}
-
 bool LEDDriver::set(uint8_t channel, uint8_t value)
 {
     return sendCommand(command_type::cmd_set, channel, 0, 0, 0, value, 0, 0);
@@ -97,7 +176,7 @@ bool LEDDriver::set(uint8_t channel, uint8_t value)
 
 bool LEDDriver::fade(uint8_t channel, uint8_t value, unsigned long duration)
 {
-    uint8_t from = get(channel);
+    uint8_t from = _halDriver->get(channel);
     return fade(channel, from, value, duration);
 }
 
@@ -154,7 +233,7 @@ bool LEDDriver::off(uint8_t channel)
 bool LEDDriver::stop()
 {
     bool result = true;
-    for (auto it : _channels)
+    for (auto it : _halDriver->_channels)
     {
         result &= off(it->channel);
     }
@@ -184,20 +263,20 @@ void inline LEDDriver::taskLoop()
                 {
                 case command_type::cmd_off:
                     ended = true;
-                    writeChannel(cmd->channel, 0);
+                    _halDriver->writeChannel(cmd->channel, 0);
                     break;
 
                 case command_type::cmd_set:
                     cmd->start = cmd->end;
                     ended = t > cmd->end;
-                    writeChannel(cmd->channel, ended ? cmd->max : cmd->min);
+                    _halDriver->writeChannel(cmd->channel, ended ? cmd->max : cmd->min);
                     break;
 
                 case command_type::cmd_fade:
                     ended = cmd->end > 0 && t > cmd->end;
                     if (ended)
                     {
-                        writeChannel(cmd->channel, cmd->max);
+                        _halDriver->writeChannel(cmd->channel, cmd->max);
                     }
                     else
                     {
@@ -212,7 +291,7 @@ void inline LEDDriver::taskLoop()
                         {
                             value += roundf(progress * cmd->fraction);
                         }
-                        writeChannel(cmd->channel, value);
+                        _halDriver->writeChannel(cmd->channel, value);
                     }
                     break;
 
@@ -222,13 +301,13 @@ void inline LEDDriver::taskLoop()
                     {
                         cmd->state = 1;
                         cmd->start += cmd->on;
-                        writeChannel(cmd->channel, cmd->max);
+                        _halDriver->writeChannel(cmd->channel, cmd->max);
                     }
                     else if (ended || cmd->state == 1)
                     {
                         cmd->state = 0;
                         cmd->start += cmd->off;
-                        writeChannel(cmd->channel, cmd->min);
+                        _halDriver->writeChannel(cmd->channel, cmd->min);
                     }
                     break;
 
@@ -238,13 +317,13 @@ void inline LEDDriver::taskLoop()
                     {
                         cmd->state = 1;
                         cmd->start += cmd->on;
-                        writeChannel(cmd->channel, random(cmd->min, cmd->max));
+                        _halDriver->writeChannel(cmd->channel, random(cmd->min, cmd->max));
                     }
                     else if (ended || cmd->state == 1)
                     {
                         cmd->state = 0;
                         cmd->start += cmd->off;
-                        writeChannel(cmd->channel, 0);
+                        _halDriver->writeChannel(cmd->channel, 0);
                     }
                     break;
                 }
@@ -257,10 +336,8 @@ void inline LEDDriver::taskLoop()
 
 bool LEDDriver::sendCommand(command_type_t type, uint8_t channel, unsigned long on, unsigned long off, uint8_t min, uint8_t max, unsigned long start, unsigned long end)
 {
-    auto it = findChannel(channel);
-    if (it == _channels.end())
+    if (!_halDriver->isChannelAttached(channel))
     {
-        log_e("Channel %i not attached to any pin", channel);
         return false;
     }
 
@@ -317,41 +394,7 @@ std::vector<LEDDriver::ptr_command_t>::const_iterator LEDDriver::eraseCommand(st
     return it;
 }
 
-std::vector<LEDDriver::ptr_channel_t>::const_iterator LEDDriver::findChannel(uint8_t channel)
-{
-    auto isChannel = [&channel](ptr_channel_t i)
-    {
-        return i->channel == channel;
-    };
-    return std::find_if(_channels.begin(), _channels.end(), isChannel);
-}
-
-std::vector<LEDDriver::ptr_channel_t>::const_iterator LEDDriver::findChannelByPin(uint8_t pin)
-{
-    auto isChannel = [&pin](ptr_channel_t i)
-    {
-        return i->pin == pin;
-    };
-    return std::find_if(_channels.begin(), _channels.end(), isChannel);
-}
-
-uint8_t LEDDriver::readChannel(uint8_t channel)
-{
-    uint32_t value = ledcRead(channel);
-    if (value > 0xFF)
-    {
-        return 0xFF;
-    }
-    return value;
-}
-
-void inline LEDDriver::writeChannel(uint8_t channel, uint8_t value)
-{
-    // log_d("Write: %i", value);
-    ledcWrite(channel, value);
-}
-
-void LEDDriver::task(void *param)
+void inline LEDDriver::task(void *param)
 {
     LEDDriver *_this = (LEDDriver *)param;
     _this->taskLoop();
