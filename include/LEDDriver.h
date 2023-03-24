@@ -3,56 +3,8 @@
 
 #include <Arduino.h>
 #include <vector>
-
-class LEDHALDriver
-{
-    friend class LEDDriver;
-
-public:
-    /// @brief Attach a pin to the given channel.
-    /// @note Please take note of the channels used, so they do not interfear with the use of PWM channels for e.g. servo motors.
-    /// @param pin The pin number to attach (e.g. LED_BUILTIN or GPIO_NUM_2)
-    /// @param channel The channel to attach the pin to. Typically 16 (0-15) channels are available.
-    virtual bool attach(uint8_t pin, uint8_t channel);
-
-    /// @brief Detach a pin from the channel it was attached to.
-    /// @param pin The pin number to detach.
-    virtual bool detach(uint8_t pin) = 0;
-
-    /// @brief Get the current level of the channel. Can be used to read the level of the LED attached to the channel.
-    /// @param channel The channel to get the level from.
-    /// @return The current level of the channel.
-    /// @see set
-    virtual uint8_t get(uint8_t channel);
-
-protected:
-    typedef struct str_channel
-    {
-        // TODO: Handling multiple pins on same channel
-        uint8_t channel;
-        uint8_t pin;
-    } str_channel_t, *ptr_channel_t;
-
-    std::vector<ptr_channel_t> _channels;
-    std::vector<ptr_channel_t>::const_iterator findChannel(uint8_t channel);
-    std::vector<ptr_channel_t>::const_iterator findChannelByPin(uint8_t pin);
-
-    virtual bool isChannelAttached(uint8_t channel);
-
-    virtual uint8_t readChannel(uint8_t channel) = 0;
-    virtual void writeChannel(uint8_t channel, uint8_t value) = 0;
-};
-
-class LEDPWMDriver : public LEDHALDriver
-{
-public:
-    virtual bool attach(uint8_t pin, uint8_t channel);
-    virtual bool detach(uint8_t pin);
-
-protected:
-    virtual uint8_t readChannel(uint8_t channel);
-    virtual void writeChannel(uint8_t channel, uint8_t value);
-};
+#include <HALDriver.h>
+#include <PWMDriver.h>
 
 class LEDDriver
 {
@@ -62,14 +14,16 @@ public:
 
     /// @brief Will initialse the LEDDriver and create a task for running and controlling LEDs in the background.
     /// @param coreId The core on wich the task shall run.
-    void begin(BaseType_t coreId = tskNO_AFFINITY);
-
-    /// @brief Will initialse the LEDDriver and create a task for running and controlling LEDs in the background.
-    /// @param coreId The core on wich the task shall run.
-    void begin(LEDHALDriver *halDriver, BaseType_t coreId = tskNO_AFFINITY);
+    void begin(HALDriver &halDriver, BaseType_t coreId = tskNO_AFFINITY);
 
     /// @brief Deinitialize the LEDDriver and stop the task controlling the LEDs.
     void end();
+
+    /// @brief Get the current level of the channel. Can be used to read the level of the LED attached to the channel.
+    /// @param channel The channel to get the level from.
+    /// @return The current level of the channel.
+    /// @see set
+    uint8_t get(uint8_t channel);
 
     /// @brief Set the level for the given channel.
     /// @param channel The channel to set the level for.
@@ -144,7 +98,7 @@ public:
     bool stop();
 
 protected:
-    LEDHALDriver *_halDriver;
+    HALDriver *_halDriver;
     TaskHandle_t _taskHandle;
     QueueHandle_t _queueHandle;
 
@@ -180,7 +134,5 @@ protected:
 protected:
     static void task(void *param);
 };
-
-// extern LEDDriver LED;
 
 #endif
