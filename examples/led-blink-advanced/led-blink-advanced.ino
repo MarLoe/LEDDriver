@@ -15,6 +15,8 @@
 #define BLINK_DELAY 5000     // The amount of milliseconds before the blinking starts
 #define BLINK_DURATION 10000 // The amount of milliseconds the blinking will last
 
+LEDDriver LED;
+
 void setup()
 {
     Serial.begin(115200);
@@ -28,14 +30,16 @@ void setup()
     Serial.print(BLINK_DURATION);
     Serial.println(" milliseconds.");
 
+    PWMDriver *hal = new PWMDriver();
+
     // Attach led pin to channel 0
-    LED.attach(LED_PIN, 0);
+    hal->attach(LED_PIN, 0);
 
     // Initialize and start the LEDDriver
-    LED.begin();
+    LED.begin(*hal);
 
     // Blink led attached to channel 0
-    // The led will be on for BLINK_ON ms and then off for BLINK_ON ms.
+    // The led will be on for BLINK_ON ms and then off for BLINK_OFF ms.
     // The blinking is delay (will start in) BLINK_DELAY ms and last for BLINK_DURATION ms.
     LED.blink(0, BLINK_ON, BLINK_OFF, BLINK_DELAY, BLINK_DURATION);
 }

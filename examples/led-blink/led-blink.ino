@@ -10,18 +10,22 @@
 // If not, replace LED_BUILTIN with the correct pin number and/or connect an external LED.
 #define LED_PIN LED_BUILTIN
 
+LEDDriver LED;
+
 void setup()
 {
     Serial.begin(115200);
     Serial.println("Example 'led-blink' running");
     Serial.println("LEDDriver will make led blink in the background.");
-    
+
+    PWMDriver *hal = new PWMDriver();
+
     // Attach led pin to channel 0
-    LED.attach(LED_PIN, 0);
+    hal->attach(LED_PIN, 0);
 
     // Initialize and start the LEDDriver
-    LED.begin();                
-    
+    LED.begin(*hal);
+
     // Blink led attached to channel 0 @ 0.5Hz
     LED.blink(0, 0.5f);
 }

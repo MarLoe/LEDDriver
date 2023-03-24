@@ -12,17 +12,21 @@
 #define LED_MIN 16
 #define LED_MAX 192
 
+LEDDriver LED;
+
 void setup()
 {
     Serial.begin(115200);
     Serial.println("Example 'led-fade' running");
     Serial.println("LEDDriver is able to fade the led from 0 (off) to 255 (full)");
 
+    PWMDriver *hal = new PWMDriver();
+
     // Attach led pin to channel 0
-    LED.attach(LED_PIN, 0);
+    hal->attach(LED_PIN, 0);
 
     // Initialize and start the LEDDriver
-    LED.begin();
+    LED.begin(*hal);
 }
 
 void loop()

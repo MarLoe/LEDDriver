@@ -12,6 +12,8 @@
 #define LED_MIN 0
 #define LED_MAX 255
 
+LEDDriver LED;
+
 void ledFadeUp()
 {
     for (int i = LED_MIN; i <= LED_MAX; i = i + 1)
@@ -36,11 +38,13 @@ void setup()
     Serial.println("Example 'led-fade-manual' running");
     Serial.println("LEDDriver is able to fade the led from 0 (off) to 255 (full)");
 
+    PWMDriver *hal = new PWMDriver();
+
     // Attach led pin to channel 0
-    LED.attach(LED_PIN, 0);
+    hal->attach(LED_PIN, 0);
 
     // Initialize and start the LEDDriver
-    LED.begin();
+    LED.begin(*hal);
 }
 
 void loop()

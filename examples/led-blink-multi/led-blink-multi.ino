@@ -15,17 +15,21 @@
 #define BLINK_OFF 500    // led will be off for this amount of milliseconds
 #define BLINK_PAUSE 5000 // The amount of milliseconds before the blinking starts
 
+LEDDriver LED;
+
 void setup()
 {
     Serial.begin(115200);
     Serial.println("Example 'led-blink-multi' running");
     Serial.println("LEDDriver will make led blink in the background.");
 
+    PWMDriver *hal = new PWMDriver();
+
     // Attach led pin to channel 0
-    LED.attach(LED_PIN, 0);
+    hal->attach(LED_PIN, 0);
 
     // Initialize and start the LEDDriver
-    LED.begin();
+    LED.begin(*hal);
 
     // Blink led attached to channel 0. It will blink on/off BLINK_COUNT times and the pause for BLINK_DELAY ms
     LED.multiBlink(0, BLINK_COUNT, BLINK_ON, BLINK_OFF, BLINK_PAUSE);
