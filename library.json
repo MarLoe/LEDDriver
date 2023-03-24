@@ -1,6 +1,6 @@
 {
     "name": "LEDDriver PWM",
-    "version": "0.2.1",
+    "version": "1.0.1",
     "keywords": [
         "led",
         "control",
@@ -78,6 +78,20 @@
             "base": "examples/led-fade-manual",
             "files": [
                 "led-fade-manual.ino"
+            ]
+        },
+        {
+            "name": "led-blink-ums3",
+            "base": "examples/led-blink-ums3",
+            "files": [
+                "led-blink-ums3.ino"
+            ]
+        },
+        {
+            "name": "led-fade-ums3",
+            "base": "examples/led-fade-ums3",
+            "files": [
+                "led-fade-ums3.ino"
             ]
         }
     ],
