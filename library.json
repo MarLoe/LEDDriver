@@ -1,6 +1,6 @@
 {
     "name": "LEDDriver PWM",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "keywords": [
         "led",
         "control",
@@ -82,14 +82,14 @@
         },
         {
             "name": "led-blink-ums3",
-            "base": "examples/led-blink-ums3",
+            "base": "examples/led-blink",
             "files": [
                 "led-blink-ums3.ino"
             ]
         },
         {
             "name": "led-fade-ums3",
-            "base": "examples/led-fade-ums3",
+            "base": "examples/led-fade",
             "files": [
                 "led-fade-ums3.ino"
             ]
@@ -107,6 +107,7 @@
             "keywords.txt"
         ],
         "exclude": [
+            "notes.md",
             "src/main.cpp",
             ".gitignore",
             ".github/",
