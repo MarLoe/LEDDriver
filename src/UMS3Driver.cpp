@@ -6,7 +6,10 @@
 
 std::vector<uint8_t> UMS3Driver::getChannels()
 {
-    std::vector<uint8_t> result = {0, 1, 2};
+    std::vector<uint8_t> result = {
+        UMS3_CHANNEL_RED,
+        UMS3_CHANNEL_GREEN,
+        UMS3_CHANNEL_BLUE};
     return result;
 }
 
@@ -47,7 +50,6 @@ void inline UMS3Driver::writeChannel(uint8_t channel, uint8_t value)
         return;
     }
     _ums3->setPixelColor(_red, _green, _blue);
-    _ums3->setPixelPower(_red || _green || _blue);
 }
 
 #endif
