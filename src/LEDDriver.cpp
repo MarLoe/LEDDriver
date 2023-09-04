@@ -21,7 +21,7 @@ void LEDDriver::begin(HALDriver &halDriver, BaseType_t coreId)
 {
     _halDriver = &halDriver;
     _queueHandle = xQueueCreate(10, sizeof(ptr_command_t));
-    xTaskCreatePinnedToCore(LEDDriver::task, "LEDDriver::task", LED_DRIVER_TASK_SIZE, this, 2, &_taskHandle, coreId);
+    xTaskCreatePinnedToCore(LEDDriver::task, "LEDDriver::task", LED_DRIVER_TASK_SIZE, this, 4, &_taskHandle, coreId);
 }
 
 void LEDDriver::end()
@@ -121,13 +121,13 @@ bool LEDDriver::stop()
 void inline LEDDriver::taskLoop()
 {
     std::vector<ptr_command_t> commands;
-    while (1)
+    for (;;)
     {
         // Unload command queue
         TickType_t waitTime = commands.size() > 0 ? 10 : 5000;
         receiveCommands(&commands, waitTime);
 
-        long t = millis();
+        unsigned long t = millis();
 
         // Process commands
         for (auto it = commands.cbegin(); it != commands.cend();)
