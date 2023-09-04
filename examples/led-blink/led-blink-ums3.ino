@@ -24,11 +24,9 @@ void setup()
     LED.begin(*hal);
 
     // Blink led attached to channel 0 @ 0.5Hz
-    // LED.blink(UMS3_CHANNEL_RED, 0.5f);
-    // LED.blink(UMS3_CHANNEL_GREEN, 1.0f);
-    // LED.blink(UMS3_CHANNEL_BLUE, 1.5f);
-
-    LED.blink(UMS3_CHANNEL_GREEN, 4);
+    LED.blink(UMS3_CHANNEL_RED, 0.5f);
+    LED.blink(UMS3_CHANNEL_GREEN, 1.0f);
+    LED.blink(UMS3_CHANNEL_BLUE, 1.5f);
 }
 
 void loop()
